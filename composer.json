@@ -1,0 +1,10 @@
+{
+  "require": {
+    "kevinlebrun/colors.php": "1.0.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Domin8or\\": "src/"
+    }
+  }
+}
