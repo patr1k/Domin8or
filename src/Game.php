@@ -11,8 +11,11 @@
 
 namespace Domin8or;
 
+use Domin8or\Enum\GameOver;
 use Domin8or\Enum\GameState;
 use Domin8or\Enum\CardSet as CardSetEnum;
+use Domin8or\Exceptions\InvalidCardException;
+use Domin8or\Exceptions\OutOfCardsException;
 use Domin8or\Exceptions\TooManyPlayersException;
 
 abstract class Game
@@ -21,6 +24,11 @@ abstract class Game
      * @var GameState
      */
     protected static $state;
+
+    /**
+     * @var GameOver
+     */
+    protected static $gameOver;
 
     /**
      * @var Player[]
@@ -38,9 +46,9 @@ abstract class Game
     protected static $cardSet;
 
     /**
-     * @var array
+     * @var CardTable
      */
-    protected static $cards = [];
+    protected static $cardTable;
 
     /**
      * @param Player $player
@@ -64,7 +72,7 @@ abstract class Game
         /** @var CardSet $cardSetClass */
         $cardSetClass  = __NAMESPACE__.'\CardSet\\'.$cardSet->getValue();
         self::$cardSet = $cardSetClass::getName();
-        self::$cards   = $cardSetClass::getCards();
+        self::$cardTable = new CardTable($cardSetClass::getCards());
     }
 
     /**
@@ -79,11 +87,12 @@ abstract class Game
     }
 
     /**
-     * End the game
+     * @param GameOver $reason
      */
-    public static function endGame(): void
+    public static function endGame(GameOver $reason): void
     {
-        self::$state = GameState::GameOver();
+        self::$state    = GameState::GameOver();
+        self::$gameOver = $reason;
 
         echo "The game has ended\n";
     }
@@ -119,5 +128,24 @@ abstract class Game
         });
 
         return $scores;
+    }
+
+    /**
+     * @param string $name
+     * @return Card
+     * @throws InvalidCardException
+     * @throws OutOfCardsException
+     */
+    public static function getCard(string $name): Card
+    {
+        return self::$cardTable->getCard($name);
+    }
+
+    /**
+     * @param Card $card
+     */
+    public static function trashCard(Card $card): void
+    {
+        self::$cardTable->trashCard($card);
     }
 }

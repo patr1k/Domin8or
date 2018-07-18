@@ -42,8 +42,9 @@ abstract class Player
 
     /**
      * Player constructor.
-     *
      * @param string $name
+     * @throws Exceptions\OutOfCardsException
+     * @throws InvalidCardException
      */
     public function __construct(string $name)
     {
@@ -53,12 +54,12 @@ abstract class Player
         $this->deck    = new DeckPile($this->discard);
         $this->hand    = new Hand($this->deck, $this->discard);
 
-        for ($i = 0; $i < 5; $i++) {
-            $this->deck->addCard(new Copper);
+        for ($i = 0; $i < 7; $i++) {
+            $this->deck->addCard(Game::getCard('Copper'));
         }
 
         for ($i = 0; $i < 3; $i++) {
-            $this->deck->addCard(new Estate);
+            $this->deck->addCard(Game::getCard('Estate'));
         }
 
         $this->deck->shuffle();
@@ -103,7 +104,7 @@ abstract class Player
         $this->buys    = 1;
 
         $this->hand->discardAll();
-        $this->hand->draw();
+        $this->hand->drawCards();
     }
 
     /**
